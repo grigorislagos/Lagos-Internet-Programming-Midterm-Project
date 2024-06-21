@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Metadata and necessary includes -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Contact Acropolis Fitness for any inquiries.">
+    <meta name="keywords" content="fitness, gym, contact, inquiry">
+    <title>Contact Us - Acropolis Fitness</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      /* Page tyles */
+      body.dark-mode {
+        background-color: #000000;
+        color: #ffffff;
+      }
+      .navbar-dark-mode, .footer-dark-mode {
+        background-color: #000000;
+        color: #ffffff;
+      }
+      .navbar {
+        background-color: #add8e6;
+      }
+      .footer {
+        background-color: #add8e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+      }
+      .navbar-brand img {
+        max-height: 80px;
+      }
+      .navbar-brand-text {
+        font-size: 1.5rem;
+        margin-left: 10px;
+        color: black;
+        text-decoration: none;
+      }
+      .navbar-brand-text:hover {
+        color: blue;
+      }
+      .footer img {
+        max-width: 80px;
+        max-height: 80px;
+      }
+      .footer .map {
+        width: 500px;
+        height: 500px;
+        margin-left: 100px;
+      }
+      .footer .copyright {
+        text-align: center;
+        flex-grow: 1;
+      }
+      .footer .social-media {
+        margin-right: 100px;
+      }
+    </style>
+    <script>
+      // jQuery function to handle dark mode toggle
+      $(document).ready(function() {
+        if (localStorage.getItem('dark-mode') === 'true') {
+          $('body').addClass('dark-mode');
+          $('.navbar').addClass('navbar-dark-mode');
+          $('footer').addClass('footer-dark-mode');
+        }
+
+        $('#toggle-dark-mode').on('click', function() {
+          $('body').toggleClass('dark-mode');
+          $('.navbar').toggleClass('navbar-dark-mode');
+          $('footer').toggleClass('footer-dark-mode');
+          localStorage.setItem('dark-mode', $('body').hasClass('dark-mode'));
+          $(this).toggleClass('active');
+        });
+      });
+
+      // Function to handle form submission for contact form, validation criteria are checked.
+      function validateForm(event) {
+        event.preventDefault();
+
+        const fullName = document.getElementById('fullName').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+        
+        // Name had to be only consisting of letters
+        const namePattern = /^[a-zA-Z\s-]+$/;
+        // Phone number has to be 10 digits and only contain numbers
+        const phonePattern = /^\d{10}$/;
+        // Email had to be a valid email address
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        // Returns error messages
+        if (!namePattern.test(fullName)) {
+          alert('Please enter a valid name. The name cannot contain numbers and can only have "-" as a special character.');
+          return false;
+        }
+
+        if (!phonePattern.test(phone)) {
+          alert('Please enter a valid 10-digit phone number.');
+          return false;
+        }
+
+        if (!emailPattern.test(email)) {
+          alert('Please enter a valid email address.');
+          return false;
+        }
+
+        if (fullName && phone && email && message) {
+          alert('Message sent successfully!');
+          document.getElementById('contactForm').reset();
+          return true;
+        } else {
+          alert('Please fill out all fields correctly.');
+          return false;
+        }
+      }
+
+      document.getElementById('contactForm').addEventListener('submit', validateForm);
+    </script>
+  </head>
+  <body>
+
+    <!-- Navbar section -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img src="./media/logo.png" alt="Acropolis Fitness Logo">
+          <span class="navbar-brand-text">Acropolis Fitness</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" id="toggle-dark-mode"><img src="./media/darkmode.png" alt="Dark Mode" style="width: 20px; height: 20px;"></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Contact form section -->
+    <div class="container mt-5">
+      <section id="contact-us" class="mt-5">
+        <h2 class="text-center">Contact Us</h2>
+        <form id="contactForm" class="mb-3">
+          <div class="form-group mb-3">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="phone" placeholder="Enter your phone number" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" id="message" rows="4" placeholder="Enter your message" required></textarea>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Send Message</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- Footer section -->
+    <footer class="footer text-center py-4 mt-5">
+      <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3143.793681862476!2d23.830525976338723!3d38.0052725988481!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14a199709f059559%3A0xad1dacf4713268b2!2sThe%20American%20College%20of%20Greece!5e0!3m2!1sel!2sgr!4v1718912674756!5m2!1sel!2sgr" width="400" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2024 Acropolis Fitness. All Rights Reserved.</p>
+        <img src="./media/logo.png" alt="Acropolis Fitness Logo">
+      </div>
+      <div class="social-media">
+        <p>Follow us on
+          <a href="https://www.facebook.com" target="_blank"><img src="./media/facebook.png" alt="Facebook"></a>
+          <a href="https://www.x.com" target="_blank"><img src="./media/x.png" alt="X"></a>
+          <a href="https://www.instagram.com" target="_blank"><img src="./media/instagram.png" alt="Instagram"></a>
+        </p>  
+      </div>
+    </footer>
+
+  </body>
+</html>

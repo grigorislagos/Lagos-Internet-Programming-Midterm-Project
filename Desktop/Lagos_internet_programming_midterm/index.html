@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Metadata, Bootstrap and Jquery -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Acropolis Fitness - Fitness paradise in the heart of Athens.">
+    <meta name="keywords" content="fitness, gym, lifestyle, bodybuilding">
+    <title>Acropolis Fitness</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      /* Dark mode styles */
+      body.dark-mode {
+        background-color: #000000;
+        color: #ffffff;
+      }
+      .navbar-dark-mode, .footer-dark-mode {
+        background-color: #000000;
+        color: #ffffff;
+      }
+      /* Product card styles */
+      .product-card img {
+        border: 5px solid black;
+        transition: border-color .2s;
+      }
+      .product-card:hover img {
+        border-color: blue;
+      }
+      .card-title {
+        display: block;
+        color: black;
+        font-weight: bold;
+      }
+      body.dark-mode .card-title {
+        color: white;
+      }
+      .nav-link:hover {
+        color: blue !important;
+      }
+      .sticky-top {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 1020;
+      }
+      .navbar {
+        background-color: #add8e6;
+      }
+      .footer {
+        background-color: #add8e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+      }
+      .navbar-brand img {
+        max-height: 80px;
+      }
+      .navbar-brand-text {
+        font-size: 1.5rem;
+        margin-left: 10px;
+        color: black;
+        text-decoration: none;
+      }
+      .navbar-brand-text:hover {
+        color: blue;
+      }
+      .sortable:hover {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      #favourite-exercise {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 2rem;
+        border: 1px solid #ccc;
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #f8f9fa;
+      }
+      #favourite-exercise.dark-mode {
+        background-color: #333;
+        border-color: #444;
+      }
+      #favourite-exercise label {
+        color: #000;
+      }
+      #favourite-exercise.dark-mode label {
+        color: #fff;
+      }
+      #addExerciseForm {
+        width: 100%;
+      }
+      #addExerciseForm .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #addExerciseForm .form-control {
+        width: 100%;
+        max-width: 300px;
+      }
+      #exerciseTable {
+        margin-top: 2rem;
+        width: 100%;
+      }
+      #exerciseTable th, #exerciseTable td {
+        text-align: center;
+        vertical-align: middle;
+      }
+      #exerciseTable th {
+        text-align: center;
+      }
+      section {
+        text-align: center;
+      }
+      .product-card {
+        margin-bottom: 2rem;
+      }
+      .navbar-nav {
+        font-size: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+      }
+      .footer img {
+        max-width: 80px;
+        max-height: 80px;
+      }
+      .footer .map {
+        width: 500px;
+        height: 500px;
+        margin-left: 100px;
+      }
+      .footer .copyright {
+        text-align: center;
+        flex-grow: 1;
+      }
+      .footer .social-media {
+        margin-right: 100px;
+      }
+      .nav-link#toggle-dark-mode.active {
+        font-weight: bold;
+      }
+      .section-full-width {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        text-align: center;
+        color: white;
+      }
+      .section-full-width img {
+        width: 100%;
+        height: auto;
+      }
+      .section-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      .section-text h2 {
+        font-size: 3rem;
+        font-weight: bold;
+      }
+      .section-text p {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+      .dark-mode #open-hours th, .dark-mode #open-hours td {
+        color: #ffffff;
+      }
+      .btn-delete {
+        background-color: red;
+        color: white;
+      }
+      .btn-delete:hover {
+        background-color: darkred;
+      }
+      .dark-mode .btn-delete {
+        background-color: darkred;
+        color: white;
+      }
+      .dark-mode .btn-delete:hover {
+        background-color: red;
+      }
+    </style>
+    <script>
+      // jQuery function to handle dark mode toggle and persist it in local storage
+      $(document).ready(function() {
+        if (localStorage.getItem('dark-mode') === 'true') {
+          $('body').addClass('dark-mode');
+          $('.navbar').addClass('navbar-dark-mode');
+          $('footer').addClass('footer-dark-mode');
+          $('#favourite-exercise').addClass('dark-mode');
+        }
+
+        $('#toggle-dark-mode').on('click', function() {
+          $('body').toggleClass('dark-mode');
+          $('.navbar').toggleClass('navbar-dark-mode');
+          $('footer').toggleClass('footer-dark-mode');
+          $('#favourite-exercise').toggleClass('dark-mode');
+          localStorage.setItem('dark-mode', $('body').hasClass('dark-mode'));
+          $(this).toggleClass('active');
+        });
+      });
+
+      // Function to add a new exercise to the exercise table
+      function addExercise(name, bodyPart, rating) {
+        const table = document.getElementById('exerciseTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.insertCell(0).innerText = name;
+        newRow.insertCell(1).innerText = bodyPart;
+        newRow.insertCell(2).innerText = rating;
+        const deleteCell = newRow.insertCell(3);
+        const deleteButton = document.createElement('button');
+        deleteButton.innerText = 'Delete';
+        deleteButton.className = 'btn btn-delete';
+        deleteButton.onclick = function() {
+          table.deleteRow(newRow.rowIndex - 1);
+        };
+        deleteCell.appendChild(deleteButton);
+      }
+
+      // Event listener to handle form submission for adding new exercises
+      document.getElementById('addExerciseForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('exerciseName').value;
+        const bodyPart = document.getElementById('exerciseBodyPart').value;
+        const rating = document.getElementById('exerciseRating').value;
+        addExercise(name, bodyPart, rating);
+        document.getElementById('addExerciseForm').reset();
+      });
+
+      // Function to sort the exercise table by column
+      function sortTable(column) {
+        const table = document.getElementById('exerciseTable');
+        const rows = Array.from(table.rows).slice(1);
+        let compare;
+
+        switch (column) {
+          case 'name':
+            compare = (a, b) => a.cells[0].innerText.localeCompare(b.cells[0].innerText);
+            break;
+          case 'bodyPart':
+            compare = (a, b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText);
+            break;
+          case 'rating':
+            compare = (a, b) => parseInt(a.cells[2].innerText) - parseInt(b.cells[2].innerText);
+            break;
+        }
+
+        rows.sort(compare).forEach(row => table.appendChild(row));
+      }
+    </script>
+  </head>
+  <body>
+
+    <!-- Navbar section -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+          <img src="./media/logo.png" alt="Acropolis Fitness Logo">
+          <span class="navbar-brand-text">Acropolis Fitness</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" id="toggle-dark-mode"><img src="./media/darkmode.png" alt="Dark Mode" style="width: 40px; height: 40px;"></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content container -->
+    <div class="container mt-5">
+
+      <!-- Section for bodybuilding: one of the services, minimal- big image with simple bold text on top  -->
+      <section id="bodybuilding" class="section-full-width mt-5">
+        <img src="./media/bodybuilding.png" alt="Bodybuilding">
+        <div class="section-text">
+          <h2>Bodybuilding</h2>
+          <p>Start your journey now</p>
+        </div>
+      </section>
+
+      <!-- Section for yoga, same as the bodybuliding section -->
+      <section id="yoga" class="section-full-width mt-5">
+        <img src="./media/yoga.png" alt="Yoga">
+        <div class="section-text">
+          <h2>Yoga</h2>
+          <p>Begin your path today</p>
+        </div>
+      </section>
+
+      <!-- Section for gym opening hours, a simple table: opening and closing hour for every day of the week. -->
+      <section id="open-hours" class="mt-5">
+        <h2>Open Hours</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Opening Time</th>
+              <th>Closing Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Monday</td>
+              <td>6:00 AM</td>
+              <td>10:00 PM</td>
+            </tr>
+            <tr>
+              <td>Tuesday</td>
+              <td>6:00 AM</td>
+              <td>10:00 PM</td>
+            </tr>
+            <tr>
+              <td>Wednesday</td>
+              <td>6:00 AM</td>
+              <td>10:00 PM</td>
+            </tr>
+            <tr>
+              <td>Thursday</td>
+              <td>6:00 AM</td>
+              <td>10:00 PM</td>
+            </tr>
+            <tr>
+              <td>Friday</td>
+              <td>6:00 AM</td>
+              <td>10:00 PM</td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td>8:00 AM</td>
+              <td>8:00 PM</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td>8:00 AM</td>
+              <td>8:00 PM</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Section for gym merchandise -->
+      <section id="merchandise" class="mt-5">
+        <h2>Our Merchandise</h2>
+        <div class="row justify-content-center">
+          <div class="col-md-4 product-card text-center">
+            <div class="card">
+              <img src="./media/hoodie.png" class="card-img-top" alt="Hoodie">
+              <div class="card-body">
+                <h5 class="card-title">Hoodie</h5>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 product-card text-center">
+            <div class="card">
+              <img src="./media/tshirt.png" class="card-img-top" alt="T-shirt">
+              <div class="card-body">
+                <h5 class="card-title">T-shirt</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section for adding and ranking exercises -->
+      <section id="favourite-exercise" class="mt-5">
+        <h2 class="text-center">Which is your favourite exercise?</h2>
+        <form id="addExerciseForm" class="mb-3">
+          <div class="form-group mb-3">
+            <label for="exerciseName" class="form-label">Exercise Name</label>
+            <input type="text" class="form-control" id="exerciseName" placeholder="Enter exercise name" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="exerciseBodyPart" class="form-label">Body Part</label>
+            <input type="text" class="form-control" id="exerciseBodyPart" placeholder="Enter exercise body part" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="exerciseRating" class="form-label">Rating (0-10)</label>
+            <input type="number" class="form-control" id="exerciseRating" min="0" max="10" placeholder="Enter exercise rating" required>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary">Add Exercise</button>
+          </div>
+        </form>
+
+        <div class="text-center mb-3">
+          <button class="btn btn-secondary" onclick="sortTable('rating')">Rank by Rating</button>
+          <button class="btn btn-secondary" onclick="sortTable('name')">Rank Alphabetically</button>
+          <button class="btn btn-secondary" onclick="sortTable('bodyPart')">Rank by Body Part</button>
+        </div>
+
+        <table class="table table-striped" id="exerciseTable">
+          <thead>
+            <tr>
+              <th class="sortable" onclick="sortTable('name')">Exercise Name</th>
+              <th class="sortable" onclick="sortTable('bodyPart')">Body Part</th>
+              <th class="sortable" onclick="sortTable('rating')">Rating</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+
+    <script>
+      // Function to add a new exercise to the exercise table
+      function addExercise(name, bodyPart, rating) {
+        const table = document.getElementById('exerciseTable').getElementsByTagName('tbody')[0];
+        const newRow = table.insertRow();
+        newRow.insertCell(0).innerText = name;
+        newRow.insertCell(1).innerText = bodyPart;
+        newRow.insertCell(2).innerText = rating;
+        const deleteCell = newRow.insertCell(3);
+        const deleteButton = document.createElement('button');
+        deleteButton.innerText = 'Delete';
+        deleteButton.className = 'btn btn-delete';
+        deleteButton.onclick = function() {
+          table.deleteRow(newRow.rowIndex - 1);
+        };
+        deleteCell.appendChild(deleteButton);
+      }
+
+      // Event listener to handle form submission for adding new exercises
+      document.getElementById('addExerciseForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('exerciseName').value;
+        const bodyPart = document.getElementById('exerciseBodyPart').value;
+        const rating = document.getElementById('exerciseRating').value;
+        addExercise(name, bodyPart, rating);
+        document.getElementById('addExerciseForm').reset();
+      });
+
+      // Function to sort the exercise table by column
+      function sortTable(column) {
+        const table = document.getElementById('exerciseTable');
+        const rows = Array.from(table.rows).slice(1);
+        let compare;
+
+        switch (column) {
+          case 'name':
+            compare = (a, b) => a.cells[0].innerText.localeCompare(b.cells[0].innerText);
+            break;
+          case 'bodyPart':
+            compare = (a, b) => a.cells[1].innerText.localeCompare(b.cells[1].innerText);
+            break;
+          case 'rating':
+            compare = (a, b) => parseInt(a.cells[2].innerText) - parseInt(b.cells[2].innerText);
+            break;
+        }
+
+        rows.sort(compare).forEach(row => table.appendChild(row));
+      }
+    </script>
+    
+    <!-- Footer section: Logo and copyrights, social media app icons that open in a new tab and a map -->
+    <footer class="footer text-center py-4 mt-5">
+      <div class="map">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3143.793681862476!2d23.830525976338723!3d38.0052725988481!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14a199709f059559%3A0xad1dacf4713268b2!2sThe%20American%20College%20of%20Greece!5e0!3m2!1sel!2sgr!4v1718912674756!5m2!1sel!2sgr" width="400" height="400" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2024 Acropolis Fitness. All Rights Reserved.</p>
+        <img src="./media/logo.png" alt="Acropolis Fitness Logo">
+      </div>
+      <div class="social-media">
+        <p>Follow us on
+          <a href="https://www.facebook.com" target="_blank"><img src="./media/facebook.png" alt="Facebook"></a>
+          <a href="https://www.x.com" target="_blank"><img src="./media/x.png" alt="X"></a>
+          <a href="https://www.instagram.com" target="_blank"><img src="./media/instagram.png" alt="Instagram"></a>
+        </p>  
+      </div>
+    </footer>
+    
+  </body>
+</html>
